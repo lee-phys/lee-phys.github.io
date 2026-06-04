@@ -16,7 +16,7 @@ timezone: Asia/Shanghai
 
 title: Psi # the main title
 
-tagline: "What can be said at all can be said clearly, and what we cannot talk about we must pass over in silence.<br>— Ludwig Wittgenstein" # it will display as the subtitle
+tagline: "What we cannot talk about we must pass over in silence.<br>— L. Wittgenstein" # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
   专注于理论物理、高等数学以及量子力学的个人学术日志
