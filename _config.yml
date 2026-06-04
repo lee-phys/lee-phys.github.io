@@ -198,7 +198,7 @@ sass:
   style: compressed
 
 compress_html:
-  clippings: none
+  clippings: all
   comments: all
   endings: all
   profile: false
