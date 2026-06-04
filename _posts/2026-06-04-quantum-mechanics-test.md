@@ -56,3 +56,4 @@ x_vals = np.linspace(0, L, 100)
 psi_vals = wave_function(x_vals, n, L)
 
 print(f"成功计算 n={n} 的量子态波函数采样点数: {len(psi_vals)}")
+```
