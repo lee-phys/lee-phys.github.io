@@ -3,26 +3,21 @@
   const BREAKPOINT = 850;
 
   function applyState(hidden) {
-    // 1. 设置主体状态
     if (window.innerWidth >= BREAKPOINT) {
       document.body.classList.toggle('sidebar-hidden', hidden);
     } else {
       document.body.classList.remove('sidebar-hidden');
     }
-
-    // 2. 核心修复：读取一下 offsetHeight，强制浏览器立刻计算当前样式（触发重排）
-    // 这样能确保 "收起状态" 被死死锁定，不会跟后续的动画混在一起
-    void document.body.offsetHeight;
-
-    // 3. 安全地移除防闪烁标记
-    requestAnimationFrame(function () {
-      document.documentElement.classList.remove('sidebar-hidden-early');
-    });
-
-    // 4. 保存状态
+    
+    // 强制浏览器重排，锁定状态
+    void document.body.offsetHeight; 
+    
+    // 移除防闪烁 class，恢复所有动画
+    document.documentElement.classList.remove('sidebar-hidden-early');
+    
     localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
   }
-  
+
   document.addEventListener('DOMContentLoaded', function () {
     const hidden = !!localStorage.getItem(STORAGE_KEY);
     applyState(hidden);

@@ -90,8 +90,12 @@
       margin-left: 0 !important;
       transition: none !important;
     }
+    /* 新增：让折叠按钮在初始状态就保持翻转，防止加载时旋转闪烁 */
+    html.sidebar-hidden-early body #sidebar-toggle {
+      transform: rotate(180deg) !important;
+      transition: none !important;
+    }
   </style>
-  <!-- ========== 防闪烁结束 ========== -->
 
   <!-- Resource Hints -->
   {% unless site.assets.self_host.enabled %}
