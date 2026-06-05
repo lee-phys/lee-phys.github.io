@@ -3,51 +3,47 @@
   const BREAKPOINT = 850;
 
   function applyState(hidden) {
-    if (!document.body) return; // 绝对防御：确保 body 存在，永不报错罢工
-    
+    if (!document.body) return;
+
     if (window.innerWidth >= BREAKPOINT) {
       document.body.classList.toggle('sidebar-hidden', hidden);
     } else {
       document.body.classList.remove('sidebar-hidden');
     }
     localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
+
+    // 强制重排：让浏览器立即计算并锁定 body.sidebar-hidden 的样式
+    void document.body.offsetHeight;
   }
 
-  /* ========================================================
-     1. 无缝接管状态：使用 MutationObserver 毫秒级拦截
-     ======================================================== */
-  const observer = new MutationObserver(function(mutations, obs) {
+  /* 无缝接管状态，并安全地摘掉防闪烁遮罩 */
+  function takeOverAndCleanUp() {
+    applyState(!!localStorage.getItem(STORAGE_KEY));
+
+    // 重排后再等一帧，确保样式完全生效，然后移除 html 上的预防类
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove('sidebar-hidden-early');
+    });
+  }
+
+  /* 使用 MutationObserver 监听 body 元素出现 */
+  const observer = new MutationObserver((mutations, obs) => {
     if (document.body) {
-      applyState(!!localStorage.getItem(STORAGE_KEY));
-      obs.disconnect(); // body 出现并处理完后，立刻停止监听，节省性能
-      
-      // 两帧之后安全摘掉 head.html 里的防闪烁遮罩
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          document.documentElement.classList.remove('sidebar-hidden-early');
-        });
-      });
+      obs.disconnect();
+      takeOverAndCleanUp();
     }
   });
-  
+
   if (document.body) {
-    // 兜底：如果这段脚本加载时 body 居然已经存在了，那就直接执行
-    applyState(!!localStorage.getItem(STORAGE_KEY));
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        document.documentElement.classList.remove('sidebar-hidden-early');
-      });
-    });
+    // body 已存在时直接接管
+    takeOverAndCleanUp();
   } else {
-    // 如果脚本在 <head> 里，就开始死盯页面的渲染
+    // 否则死盯 DOM 变化，直到 body 出现
     observer.observe(document.documentElement, { childList: true });
   }
 
-  /* ========================================================
-     2. 终极事件监听：事件代理
-     ======================================================== */
-  document.addEventListener('click', function(e) {
-    // 匹配收起按钮
+  /* 事件代理：处理收起/展开按钮点击 */
+  document.addEventListener('click', (e) => {
     const toggleBtn = e.target.closest('#sidebar-toggle');
     if (toggleBtn) {
       const currentHidden = document.body.classList.contains('sidebar-hidden');
@@ -55,7 +51,6 @@
       return;
     }
 
-    // 匹配展开按钮
     const showBtn = e.target.closest('#sidebar-show-btn');
     if (showBtn) {
       applyState(false);
@@ -63,11 +58,8 @@
     }
   });
 
-  /* ========================================================
-     3. 监听屏幕缩放（响应式兼容）
-     ======================================================== */
-  window.addEventListener('resize', function() {
+  /* 响应窗口尺寸变化 */
+  window.addEventListener('resize', () => {
     applyState(!!localStorage.getItem(STORAGE_KEY));
   });
-
 })();
