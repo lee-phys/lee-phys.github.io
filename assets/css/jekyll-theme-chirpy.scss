@@ -53,10 +53,7 @@ html {
   color: var(--sidebar-muted-color);
   font-size: 0.75rem;
   transition: transform 0.3s, background 0.2s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
+  &:hover { background: rgba(255, 255, 255, 0.25); }
 }
 
 #sidebar-show-btn {
@@ -79,34 +76,28 @@ html {
   font-size: 0.7rem;
   backdrop-filter: blur(4px);
   transition: background 0.2s;
-
-  &:hover {
-    background: rgba(var(--sidebar-bg-rgb), 0.95);
-  }
+  &:hover { background: rgba(var(--sidebar-bg-rgb), 0.95); }
 }
 
 body.sidebar-hidden,
 html.sidebar-hidden-early body {
   #sidebar {
-    width: 0;
-    overflow: hidden;
-    padding: 0;
+    transform: translateX(-260px); /* 唯一改动：平移替代 width:0 */
   }
-
   #main-wrapper {
     margin-left: 0;
   }
-
   #sidebar-toggle {
     transform: rotate(180deg);
   }
-
   #sidebar-show-btn {
     display: flex;
   }
 }
 
-#sidebar,
+#sidebar {
+  transition: transform 0.3s ease;
+}
 #main-wrapper {
-  transition: all 0.3s ease;
+  transition: margin-left 0.3s ease;
 }
