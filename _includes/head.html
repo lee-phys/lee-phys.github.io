@@ -161,5 +161,16 @@
   {% endif %}
 
   {% include metadata-hook.html %}
-  
+ 
+  <script>
+    // 强制注销旧的 Service Worker，彻底断开缓存锁
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script>
+
 </head>
