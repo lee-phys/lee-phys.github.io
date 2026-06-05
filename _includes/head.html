@@ -136,9 +136,10 @@
   {% include metadata-hook.html %}
 
   <script>
-    if (localStorage.getItem('chirpy-sidebar-hidden')) {
+    // 仅在屏幕宽度大于等于 850px（桌面端）时，才读取收起状态
+    if (window.innerWidth >= 850 && localStorage.getItem('chirpy-sidebar-hidden')) {
       document.documentElement.classList.add('sidebar-hidden-early');
     }
   </script>
-
+  
 </head>

@@ -36,68 +36,80 @@ html {
   }
 }
 
-/* 侧边栏折叠功能 */
-#sidebar-toggle {
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1rem;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 0.5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--sidebar-muted-color);
-  font-size: 0.75rem;
-  transition: transform 0.3s, background 0.2s;
-  &:hover { background: rgba(255, 255, 255, 0.25); }
+/* ========= 自定义侧边栏折叠功能 ========= */
+
+/* 1. 移动端 (小于 850px)：强制隐藏我们的自定义按钮，完全交回给 Chirpy 原生控制 */
+@media (max-width: 849px) {
+  #sidebar-toggle,
+  #sidebar-show-btn {
+    display: none !important;
+  }
 }
 
-#sidebar-show-btn {
-  display: none;
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 999;
-  width: 20px;
-  height: 48px;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--sidebar-bg-rgb), 0.75);
-  border: 0.5px solid rgba(255, 255, 255, 0.2);
-  border-left: none;
-  border-radius: 0 6px 6px 0;
-  cursor: pointer;
-  color: var(--sidebar-muted-color);
-  font-size: 0.7rem;
-  backdrop-filter: blur(4px);
-  transition: background 0.2s;
-  &:hover { background: rgba(var(--sidebar-bg-rgb), 0.95); }
-}
+/* 2. 桌面端 (大于等于 850px)：执行你原本的折叠逻辑 */
+@media (min-width: 850px) {
+  #sidebar-toggle {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: 0.5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--sidebar-muted-color);
+    font-size: 0.75rem;
+    transition: transform 0.3s, background 0.2s;
+    &:hover { background: rgba(255, 255, 255, 0.25); }
+  }
 
-body.sidebar-hidden,
-html.sidebar-hidden-early body {
+  #sidebar-show-btn {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    width: 20px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--sidebar-bg-rgb), 0.75);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    color: var(--sidebar-muted-color);
+    font-size: 0.7rem;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s;
+    &:hover { background: rgba(var(--sidebar-bg-rgb), 0.95); }
+  }
+
+  body.sidebar-hidden,
+  html.sidebar-hidden-early body {
+    #sidebar {
+      transform: translateX(-260px) !important;
+    }
+    #main-wrapper {
+      margin-left: 0 !important;
+    }
+    #sidebar-toggle {
+      transform: rotate(180deg);
+    }
+    #sidebar-show-btn {
+      display: flex;
+    }
+  }
+
   #sidebar {
-    transform: translateX(-260px); /* 唯一改动：平移替代 width:0 */
+    transition: transform 0.3s ease;
   }
   #main-wrapper {
-    margin-left: 0;
+    transition: margin-left 0.3s ease;
   }
-  #sidebar-toggle {
-    transform: rotate(180deg);
-  }
-  #sidebar-show-btn {
-    display: flex;
-  }
-}
-
-#sidebar {
-  transition: transform 0.3s ease;
-}
-#main-wrapper {
-  transition: margin-left 0.3s ease;
 }
