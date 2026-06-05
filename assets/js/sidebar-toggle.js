@@ -3,17 +3,24 @@
   const BREAKPOINT = 850;
 
   function applyState(hidden) {
-    // 如果是宽屏（桌面端），应用我们自定义的折叠逻辑
+    // 1. 设置主体状态
     if (window.innerWidth >= BREAKPOINT) {
       document.body.classList.toggle('sidebar-hidden', hidden);
     } else {
-      // 移动端：强制清除自定义 class，防止干扰 Chirpy 原生滑动抽屉
       document.body.classList.remove('sidebar-hidden');
     }
+
+    // 2. 核心修复：读取一下 offsetHeight，强制浏览器立刻计算当前样式（触发重排）
+    // 这样能确保 "收起状态" 被死死锁定，不会跟后续的动画混在一起
+    void document.body.offsetHeight;
+
+    // 3. 安全地移除防闪烁标记
     document.documentElement.classList.remove('sidebar-hidden-early');
+
+    // 4. 保存状态
     localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
   }
-
+  
   document.addEventListener('DOMContentLoaded', function () {
     const hidden = !!localStorage.getItem(STORAGE_KEY);
     applyState(hidden);
