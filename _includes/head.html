@@ -81,7 +81,8 @@
     })();
   </script>
   <style>
-    /* 内联防闪烁样式：立即隐藏侧边栏并禁用过渡，避免外部 CSS 加载前闪烁 */
+    /* ===== 阶段一：预防闪烁（html 带 sidebar-hidden-early 时） ===== */
+    /* 强制隐藏 + 关闭动画，保证首帧就看不到侧边栏 */
     html.sidebar-hidden-early body #sidebar {
       transform: translateX(-260px) !important;
       transition: none !important;
@@ -90,10 +91,24 @@
       margin-left: 0 !important;
       transition: none !important;
     }
-    /* 新增：让折叠按钮在初始状态就保持翻转，防止加载时旋转闪烁 */
     html.sidebar-hidden-early body #sidebar-toggle {
       transform: rotate(180deg) !important;
       transition: none !important;
+    }
+
+    /* ===== 阶段二：JS 接管后（body 带 sidebar-hidden 时） ===== */
+    /* 不依赖外部 CSS，直接维持隐藏状态；不强制禁用动画，让后续的展开/收起可以有过渡效果 */
+    body.sidebar-hidden #sidebar {
+      transform: translateX(-260px) !important;
+    }
+    body.sidebar-hidden #main-wrapper {
+      margin-left: 0 !important;
+    }
+    body.sidebar-hidden #sidebar-toggle {
+      transform: rotate(180deg);
+    }
+    body.sidebar-hidden #sidebar-show-btn {
+      display: flex;
     }
   </style>
 
