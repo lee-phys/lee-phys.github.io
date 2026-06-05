@@ -112,12 +112,4 @@ html {
   #main-wrapper {
     transition: margin-left 0.3s ease;
   }
-  /* 核心修复：当 html 带有防闪烁标记时，强制关闭这三个元素的过渡动画 */
-  html.sidebar-hidden-early body {
-    #sidebar,
-    #main-wrapper,
-    #sidebar-toggle {
-      transition: none !important;
-    }
-  }
 }

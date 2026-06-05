@@ -15,7 +15,9 @@
     void document.body.offsetHeight;
 
     // 3. 安全地移除防闪烁标记
-    document.documentElement.classList.remove('sidebar-hidden-early');
+    requestAnimationFrame(function () {
+      document.documentElement.classList.remove('sidebar-hidden-early');
+    });
 
     // 4. 保存状态
     localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');

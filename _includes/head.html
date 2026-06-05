@@ -70,6 +70,29 @@
 
   {% include_cached favicons.html %}
 
+  <!-- ========== 侧边栏防闪烁：必须在所有外部 CSS 之前执行 ========== -->
+  <script>
+    (function () {
+      var STORAGE_KEY = 'chirpy-sidebar-hidden';
+      // 仅在桌面端宽度且用户之前选择了隐藏侧边栏时，添加预防类
+      if (window.innerWidth >= 850 && localStorage.getItem(STORAGE_KEY)) {
+        document.documentElement.classList.add('sidebar-hidden-early');
+      }
+    })();
+  </script>
+  <style>
+    /* 内联防闪烁样式：立即隐藏侧边栏并禁用过渡，避免外部 CSS 加载前闪烁 */
+    html.sidebar-hidden-early body #sidebar {
+      transform: translateX(-260px) !important;
+      transition: none !important;
+    }
+    html.sidebar-hidden-early body #main-wrapper {
+      margin-left: 0 !important;
+      transition: none !important;
+    }
+  </style>
+  <!-- ========== 防闪烁结束 ========== -->
+
   <!-- Resource Hints -->
   {% unless site.assets.self_host.enabled %}
     {% for hint in site.data.origin.cors.resource_hints %}
@@ -134,12 +157,5 @@
   {% endif %}
 
   {% include metadata-hook.html %}
-
-  <script>
-    // 仅在屏幕宽度大于等于 850px（桌面端）时，才读取收起状态
-    if (window.innerWidth >= 850 && localStorage.getItem('chirpy-sidebar-hidden')) {
-      document.documentElement.classList.add('sidebar-hidden-early');
-    }
-  </script>
   
 </head>
