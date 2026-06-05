@@ -10,18 +10,103 @@
 
 /* append your custom style below */
 
-/* ==========================================================================
-   1. 官方推荐的变量重写：定制浅色模式下的“学术蔚蓝色系”
-   ========================================================================== */
-html[data-mode='light'] {
-  --bg: #f0f5fa;         /* 全局大背景（网页最底层） */
-  --main-bg: #f0f5fa;    /* 主内容区背景（卡片下方的那层纸） */
-  --topbar-bg: #f0f5fa;  /* 顶部导航栏背景 */
+/* 夏日活力主题（轻盈版） */
+html {
+  @media (prefers-color-scheme: light) {
+    &:not([data-mode]),
+    &[data-mode='light'] {
+      --main-bg: #f7fbfe;
+      --sidebar-bg: #e0f2fa;
+      --sidebar-bg-rgb: 176, 226, 248;
+      --topbar-bg: #edf7fc;
+      --card-bg: #ffffff;
+      --post-bg: #fefeff;
+    }
+  }
 
-  /* 细节微调，让卡片在蓝底上有层次感，文字更清晰 */
-  --card-bg: #e6eef5;
-  --timeline-color: #d0e1f0;
-  --text-color: #2a3b4c;
-  --heading-color: #1a2633;
+  @media (prefers-color-scheme: dark) {
+    &[data-mode='light'] {
+      --main-bg: #f7fbfe;
+      --sidebar-bg: #e0f2fa;
+      --sidebar-bg-rgb: 176, 226, 248;
+      --topbar-bg: #edf7fc;
+      --card-bg: #ffffff;
+      --post-bg: #fefeff;
+    }
+  }
 }
 
+/* 侧边栏折叠功能 */
+#sidebar-toggle {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--sidebar-muted-color);
+  font-size: 0.75rem;
+  transition: transform 0.3s, background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+#sidebar-show-btn {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  width: 20px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--sidebar-bg-rgb), 0.75);
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  color: var(--sidebar-muted-color);
+  font-size: 0.7rem;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(var(--sidebar-bg-rgb), 0.95);
+  }
+}
+
+body.sidebar-hidden,
+html.sidebar-hidden-early body {
+  #sidebar {
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  #main-wrapper {
+    margin-left: 0;
+  }
+
+  #sidebar-toggle {
+    transform: rotate(180deg);
+  }
+
+  #sidebar-show-btn {
+    display: flex;
+  }
+}
+
+#sidebar,
+#main-wrapper {
+  transition: all 0.3s ease;
+}
