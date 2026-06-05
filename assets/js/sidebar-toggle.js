@@ -2,8 +2,9 @@
   const STORAGE_KEY = 'chirpy-sidebar-hidden';
   const BREAKPOINT = 850;
 
-  // 纯粹的状态切换函数，不涉及解绑防闪烁
   function applyState(hidden) {
+    if (!document.body) return; // 绝对防御：确保 body 存在，永不报错罢工
+    
     if (window.innerWidth >= BREAKPOINT) {
       document.body.classList.toggle('sidebar-hidden', hidden);
     } else {
@@ -12,42 +13,61 @@
     localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
   }
 
-  // 必须等待 DOM 树完全生成，保证 document.body 绝对存在，永不报错
-  document.addEventListener('DOMContentLoaded', function () {
-    
-    // 1. 先应用初始的收起/展开状态
-    const isHidden = !!localStorage.getItem(STORAGE_KEY);
-    applyState(isHidden);
-
-    // 2. 终极防闪烁杀手锏：利用 requestAnimationFrame 延迟两帧摘掉“静音罩”
-    // 第一帧：等待浏览器把收起的样式排版好
-    // 第二帧：确认已经画在屏幕上了，再安全移除防闪烁 class。完美避开动画冲突！
+  /* ========================================================
+     1. 无缝接管状态：使用 MutationObserver 毫秒级拦截
+     ======================================================== */
+  const observer = new MutationObserver(function(mutations, obs) {
+    if (document.body) {
+      applyState(!!localStorage.getItem(STORAGE_KEY));
+      obs.disconnect(); // body 出现并处理完后，立刻停止监听，节省性能
+      
+      // 两帧之后安全摘掉 head.html 里的防闪烁遮罩
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          document.documentElement.classList.remove('sidebar-hidden-early');
+        });
+      });
+    }
+  });
+  
+  if (document.body) {
+    // 兜底：如果这段脚本加载时 body 居然已经存在了，那就直接执行
+    applyState(!!localStorage.getItem(STORAGE_KEY));
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
         document.documentElement.classList.remove('sidebar-hidden-early');
       });
     });
+  } else {
+    // 如果脚本在 <head> 里，就开始死盯页面的渲染
+    observer.observe(document.documentElement, { childList: true });
+  }
 
-    // 3. 绑定左下角收起按钮
-    const toggleBtn = document.getElementById('sidebar-toggle');
+  /* ========================================================
+     2. 终极事件监听：事件代理
+     ======================================================== */
+  document.addEventListener('click', function(e) {
+    // 匹配收起按钮
+    const toggleBtn = e.target.closest('#sidebar-toggle');
     if (toggleBtn) {
-      toggleBtn.addEventListener('click', function () {
-        const currentHidden = document.body.classList.contains('sidebar-hidden');
-        applyState(!currentHidden);
-      });
+      const currentHidden = document.body.classList.contains('sidebar-hidden');
+      applyState(!currentHidden);
+      return;
     }
 
-    // 4. 绑定左边缘展开按钮
-    const showBtn = document.getElementById('sidebar-show-btn');
+    // 匹配展开按钮
+    const showBtn = e.target.closest('#sidebar-show-btn');
     if (showBtn) {
-      showBtn.addEventListener('click', function () {
-        applyState(false);
-      });
+      applyState(false);
+      return;
     }
-
-    // 5. 监听屏幕缩放（手机端/电脑端切换）
-    window.addEventListener('resize', function() {
-      applyState(!!localStorage.getItem(STORAGE_KEY));
-    });
   });
+
+  /* ========================================================
+     3. 监听屏幕缩放（响应式兼容）
+     ======================================================== */
+  window.addEventListener('resize', function() {
+    applyState(!!localStorage.getItem(STORAGE_KEY));
+  });
+
 })();
