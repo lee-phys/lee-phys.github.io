@@ -26,15 +26,21 @@ math: true
 ### 独立公式块 (Display Math)
 一维含时薛定谔方程（Time-dependent Schrödinger Equation）的形式如下：
 
-$$i\hbar \frac{\partial}{\partial t}\psi(x,t) = \left[-\frac{\hbar^2}{2m}\frac{\partial^2}{\partial x^2} + V(x,t)\right]\psi(x,t)$$
+$$
+i\hbar \frac{\partial}{\partial t}\psi(x,t) = \left[-\frac{\hbar^2}{2m}\frac{\partial^2}{\partial x^2} + V(x,t)\right]\psi(x,t)
+$$
 
 如果势能 $V(x)$ 与时间无关，通过分离变量法可以得到定态薛定谔方程：
 
-$$\hat{H}\psi(x) = E\psi(x)$$
+$$
+\hat{H}\psi(x) = E\psi(x)
+$$
 
 其中哈密顿算符 $\hat{H}$ 为：
 
-$$\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V(x)$$
+$$
+\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V(x)
+$$
 
 ---
 

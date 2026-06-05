@@ -1,0 +1,27 @@
+---
+---
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+/* ==========================================================================
+   1. 官方推荐的变量重写：定制浅色模式下的“学术蔚蓝色系”
+   ========================================================================== */
+html[data-mode='light'] {
+  --bg: #f0f5fa;         /* 全局大背景（网页最底层） */
+  --main-bg: #f0f5fa;    /* 主内容区背景（卡片下方的那层纸） */
+  --topbar-bg: #f0f5fa;  /* 顶部导航栏背景 */
+
+  /* 细节微调，让卡片在蓝底上有层次感，文字更清晰 */
+  --card-bg: #e6eef5;
+  --timeline-color: #d0e1f0;
+  --text-color: #2a3b4c;
+  --heading-color: #1a2633;
+}
+
