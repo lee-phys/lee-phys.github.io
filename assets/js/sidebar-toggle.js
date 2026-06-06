@@ -3,6 +3,15 @@
 
   var STORAGE_KEY = 'chirpy-sidebar-hidden';
   var BREAKPOINT = 850;
+  
+  /* ─────────────────────────────────────────
+   * 终极兜底：超过 3 秒强制恢复可见
+   * 防止 JS 报错或 CSS 永远加载不完导致白屏
+   * ───────────────────────────────────────── */
+  var fallbackTimer = setTimeout(function () {
+    document.documentElement.classList.remove('sidebar-hidden-early');
+    if (document.body) document.body.style.visibility = 'visible';
+  }, 3000);
 
   /* ─────────────────────────────────────────
    * 工具函数
@@ -44,6 +53,9 @@
   }
 
   function takeOver() {
+    // 清除兜底定时器，正常流程不需要强制恢复
+    clearTimeout(fallbackTimer);
+
     var hidden = shouldHide();
 
     // 同步应用状态（此时 body 已存在，样式立即生效）
