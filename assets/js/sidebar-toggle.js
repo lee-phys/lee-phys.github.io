@@ -1,65 +1,114 @@
 (function () {
-  const STORAGE_KEY = 'chirpy-sidebar-hidden';
-  const BREAKPOINT = 850;
+  'use strict';
+
+  var STORAGE_KEY = 'chirpy-sidebar-hidden';
+  var BREAKPOINT = 850;
+
+  /* ─────────────────────────────────────────
+   * 工具函数
+   * ───────────────────────────────────────── */
+
+  function isDesktop() {
+    return window.innerWidth >= BREAKPOINT;
+  }
+
+  function shouldHide() {
+    return isDesktop() && !!localStorage.getItem(STORAGE_KEY);
+  }
+
+  /* ─────────────────────────────────────────
+   * 阶段一：在 <head> 中同步执行
+   * 此时 document.body 还不存在，只能操作 <html>
+   * 目的：在浏览器开始绘制 body 之前就确定好 class
+   * ───────────────────────────────────────── */
+  if (shouldHide()) {
+    // sidebar-hidden-early 由最前面的内联脚本已经加了
+    // 这里作为双重保险
+    document.documentElement.classList.add('sidebar-hidden-early');
+  }
+
+  /* ─────────────────────────────────────────
+   * 阶段二：body 就绪后接管
+   * ───────────────────────────────────────── */
 
   function applyState(hidden) {
     if (!document.body) return;
 
-    if (window.innerWidth >= BREAKPOINT) {
-      document.body.classList.toggle('sidebar-hidden', hidden);
-    } else {
-      document.body.classList.remove('sidebar-hidden');
-    }
-    localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
+    var shouldApply = isDesktop() ? hidden : false;
 
-    // 强制重排：让浏览器立即计算并锁定 body.sidebar-hidden 的样式
-    void document.body.offsetHeight;
+    // 先同步写 class，强制重排，再移除防闪烁类
+    document.body.classList.toggle('sidebar-hidden', shouldApply);
+    void document.body.offsetWidth; // 强制重排，锁定样式
+
+    localStorage.setItem(STORAGE_KEY, hidden ? '1' : '');
   }
 
-  /* 无缝接管状态，并安全地摘掉防闪烁遮罩 */
-  function takeOverAndCleanUp() {
-    applyState(!!localStorage.getItem(STORAGE_KEY));
+  function takeOver() {
+    var hidden = shouldHide();
 
-    // 重排后再等一帧，确保样式完全生效，然后移除 html 上的预防类
-    requestAnimationFrame(() => {
-      document.documentElement.classList.remove('sidebar-hidden-early');
+    // 同步应用状态（此时 body 已存在，样式立即生效）
+    applyState(hidden);
+
+    // 移除防闪烁类：必须在重排之后、下一帧之前
+    // 用 requestAnimationFrame 确保浏览器已提交当前帧的样式
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        // 双 rAF：第一帧提交样式，第二帧才安全移除防闪烁类
+        document.documentElement.classList.remove('sidebar-hidden-early');
+      });
     });
   }
 
-  /* 使用 MutationObserver 监听 body 元素出现 */
-  const observer = new MutationObserver((mutations, obs) => {
-    if (document.body) {
-      obs.disconnect();
-      takeOverAndCleanUp();
-    }
-  });
+  function bindEvents() {
+    // 按钮点击（事件委托）
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('#sidebar-toggle')) {
+        applyState(!document.body.classList.contains('sidebar-hidden'));
+        return;
+      }
+      if (e.target.closest('#sidebar-show-btn')) {
+        applyState(false);
+        return;
+      }
+    });
 
-  if (document.body) {
-    // body 已存在时直接接管
-    takeOverAndCleanUp();
-  } else {
-    // 否则死盯 DOM 变化，直到 body 出现
-    observer.observe(document.documentElement, { childList: true });
+    // 窗口缩放
+    window.addEventListener('resize', function () {
+      applyState(!!localStorage.getItem(STORAGE_KEY));
+    });
   }
 
-  /* 事件代理：处理收起/展开按钮点击 */
-  document.addEventListener('click', (e) => {
-    const toggleBtn = e.target.closest('#sidebar-toggle');
-    if (toggleBtn) {
-      const currentHidden = document.body.classList.contains('sidebar-hidden');
-      applyState(!currentHidden);
-      return;
+  /* 等待 body 就绪 */
+  if (document.body) {
+    takeOver();
+    bindEvents();
+  } else {
+    /* 
+     * 脚本在 </head> 前执行，body 尚未解析
+     * 用最轻量的方式等待：先尝试 DOMContentLoaded，
+     * 同时用 MutationObserver 做更早的拦截
+     */
+    var taken = false;
+
+    function tryTakeOver() {
+      if (taken || !document.body) return;
+      taken = true;
+      takeOver();
+      bindEvents();
     }
 
-    const showBtn = e.target.closest('#sidebar-show-btn');
-    if (showBtn) {
-      applyState(false);
-      return;
-    }
-  });
+    // MutationObserver：body 标签一出现就接管
+    var observer = new MutationObserver(function (mutations, obs) {
+      if (document.body) {
+        obs.disconnect();
+        tryTakeOver();
+      }
+    });
+    observer.observe(document.documentElement, { childList: true });
 
-  /* 响应窗口尺寸变化 */
-  window.addEventListener('resize', () => {
-    applyState(!!localStorage.getItem(STORAGE_KEY));
-  });
+    // 保底：DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function () {
+      tryTakeOver();
+    });
+  }
 })();

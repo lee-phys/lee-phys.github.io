@@ -69,35 +69,31 @@
   </title>
 
   {% include_cached favicons.html %}
-
-  <!-- ========== 侧边栏防闪烁：必须在所有外部 CSS 之前执行 ========== -->
+  
+  <!-- 侧边栏防闪烁：必须在所有外部 CSS 之前 -->
   <script>
     (function () {
       var STORAGE_KEY = 'chirpy-sidebar-hidden';
-      // 仅在桌面端宽度且用户之前选择了隐藏侧边栏时，添加预防类
       if (window.innerWidth >= 850 && localStorage.getItem(STORAGE_KEY)) {
         document.documentElement.classList.add('sidebar-hidden-early');
       }
     })();
   </script>
+
+  <!-- 配合上面的 JS，在 body 出现前用不可见性兜底 -->
   <style>
-    /* ===== 阶段一：预防闪烁（html 带 sidebar-hidden-early 时） ===== */
-    /* 强制隐藏 + 关闭动画，保证首帧就看不到侧边栏 */
-    html.sidebar-hidden-early body #sidebar {
-      transform: translateX(-260px) !important;
-      transition: none !important;
-    }
-    html.sidebar-hidden-early body #main-wrapper {
-      margin-left: 0 !important;
-      transition: none !important;
-    }
-    html.sidebar-hidden-early body #sidebar-toggle {
-      transform: rotate(180deg) !important;
-      transition: none !important;
+    /* 阶段一：body 出现前，整个页面先隐藏，避免侧边栏闪现 */
+    html.sidebar-hidden-early {
+      visibility: hidden;
     }
 
-    /* ===== 阶段二：JS 接管后（body 带 sidebar-hidden 时） ===== */
-    /* 不依赖外部 CSS，直接维持隐藏状态；不强制禁用动画，让后续的展开/收起可以有过渡效果 */
+    /* 阶段二：JS 接管后恢复可见，body.sidebar-hidden 维持折叠状态 */
+    html.sidebar-hidden-early body.sidebar-hidden,
+    html:not(.sidebar-hidden-early) body {
+      visibility: visible;
+    }
+
+    /* sidebar 折叠样式（body 接管后使用） */
     body.sidebar-hidden #sidebar {
       transform: translateX(-260px) !important;
     }
@@ -111,7 +107,7 @@
       display: flex;
     }
   </style>
-
+  
   <!-- Resource Hints -->
   {% unless site.assets.self_host.enabled %}
     {% for hint in site.data.origin.cors.resource_hints %}
@@ -187,5 +183,7 @@
       });
     }
   </script>
+
+  <script src="{{ '/assets/js/sidebar-toggle.js' | relative_url }}"></script>
 
 </head>
