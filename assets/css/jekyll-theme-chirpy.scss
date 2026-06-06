@@ -15,10 +15,10 @@ html {
   @media (prefers-color-scheme: light) {
     &:not([data-mode]),
     &[data-mode='light'] {
-      --main-bg: #f9fdff;
+      --main-bg: #ffffff;
       --sidebar-bg: #cce8fa;
       --sidebar-bg-rgb: 204, 232, 250;
-      --topbar-bg: #e3f4fc;
+      --topbar-bg: #ffffff;
       --card-bg: #ffffff;
       --post-bg: #ffffff;
     }
@@ -26,10 +26,10 @@ html {
 
   @media (prefers-color-scheme: dark) {
     &[data-mode='light'] {
-      --main-bg: #f9fdff;
+      --main-bg: #ffffff;
       --sidebar-bg: #cce8fa;
       --sidebar-bg-rgb: 204, 232, 250;
-      --topbar-bg: #e3f4fc;
+      --topbar-bg: #ffffff;
       --card-bg: #ffffff;
       --post-bg: #ffffff;
     }
