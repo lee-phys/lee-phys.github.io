@@ -10,28 +10,28 @@
 
 /* append your custom style below */
 
-/* 夏日活力主题（轻盈版） */
+/* 夏日活力主题（地中海版） */
 html {
   @media (prefers-color-scheme: light) {
     &:not([data-mode]),
     &[data-mode='light'] {
-      --main-bg: #f7fbfe;
-      --sidebar-bg: #e0f2fa;
-      --sidebar-bg-rgb: 176, 226, 248;
-      --topbar-bg: #edf7fc;
+      --main-bg: #f9fdff;
+      --sidebar-bg: #cce8fa;
+      --sidebar-bg-rgb: 204, 232, 250;
+      --topbar-bg: #e3f4fc;
       --card-bg: #ffffff;
-      --post-bg: #fefeff;
+      --post-bg: #ffffff;
     }
   }
 
   @media (prefers-color-scheme: dark) {
     &[data-mode='light'] {
-      --main-bg: #f7fbfe;
-      --sidebar-bg: #e0f2fa;
-      --sidebar-bg-rgb: 176, 226, 248;
-      --topbar-bg: #edf7fc;
+      --main-bg: #f9fdff;
+      --sidebar-bg: #cce8fa;
+      --sidebar-bg-rgb: 204, 232, 250;
+      --topbar-bg: #e3f4fc;
       --card-bg: #ffffff;
-      --post-bg: #fefeff;
+      --post-bg: #ffffff;
     }
   }
 }
