@@ -27,8 +27,12 @@ math: true
 一维含时薛定谔方程（Time-dependent Schrödinger Equation）的形式如下：
 
 $$
-i\hbar \frac{\partial}{\partial t}\psi(x,t) = \left[-\frac{\hbar^2}{2m}\frac{\partial^2}{\partial x^2} + V(x,t)\right]\psi(x,t)
+\begin{equation}
+    i\hbar \frac{\partial}{\partial t}\psi(x,t) = \left[-\frac{\hbar^2}{2m}\frac{\partial^2}{\partial x^2} + V(x,t)\right]\psi(x,t) \label{eq:tdse}
+\end{equation}
 $$
+
+方程引用 \eqref{eq:tdse}
 
 如果势能 $V(x)$ 与时间无关，通过分离变量法可以得到定态薛定谔方程：
 
